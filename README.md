@@ -1,6 +1,6 @@
 # mschaffnerlcsw.com
 
-Static website for Michelle Schaffner, LCSW-R. It was migrated off Wix in October 2026.
+Static website for Michelle Schaffner, LCSW-R. It was migrated off Wix in October 2026 and is hosted on Cloudflare Pages.
 
 It's plain HTML and CSS with no build step, framework or dependencies.
 
@@ -14,7 +14,8 @@ contact-me.html             /contact-me
 404.html                    Not-found page
 styles.css                  All styling
 images/                     Photos and leaf banner
-vercel.json                 Clean URLs (no .html), redirect from old /blog-1
+_redirects                  Redirect from old /blog-1 (Cloudflare Pages)
+vercel.json                 Same, for Vercel (unused)
 sitemap.xml, robots.txt, favicon.svg
 ```
 
@@ -36,17 +37,25 @@ npx serve .
 
 Then open http://localhost:3000.
 
-## Deploy to Vercel
+## Hosting: Cloudflare Pages
 
-1. Push this repo to GitHub.
-2. In Vercel, choose **Add New → Project** and import the repo. Use **Other** as the framework preset, leave the build command empty, and set the output directory to `.` (the root).
-3. Each push to `main` deploys automatically.
+The site is the Cloudflare Pages project `mschaffnerlcsw` at https://mschaffnerlcsw.pages.dev. It's free, and commercial use is allowed. Cloudflare drops `.html` from URLs automatically, `_redirects` sends the old `/blog-1` URL to the home page, and `404.html` is the not-found page. (`vercel.json` does the same on Vercel if the site ever moves there.)
+
+### Deploy
+
+If the project is connected to this GitHub repo (Settings → Builds → Connect to Git), each push to `main` deploys automatically. Use these build settings: framework preset **None**, build command empty, output directory `/`.
+
+To deploy by hand without the README:
+
+```sh
+mkdir -p /tmp/site && cp -R *.html styles.css favicon.svg robots.txt sitemap.xml _redirects images /tmp/site/
+npx wrangler pages deploy /tmp/site --project-name mschaffnerlcsw --branch main
+```
 
 ### Move the domain
 
-1. In the Vercel project, go to **Settings → Domains** and add `www.mschaffnerlcsw.com` and `mschaffnerlcsw.com`. Set the apex domain to redirect to `www`.
-2. Vercel shows the DNS records to create, usually an `A` record for `@` and a `CNAME` for `www` pointing to `cname.vercel-dns.com`. Add them wherever the domain's DNS is managed.
-3. If the domain is registered through Wix, either change the records in Wix's DNS settings or transfer the domain to another registrar (Cloudflare, Porkbun, Namecheap) first. Wix domain renewal is separate from the Wix site plan.
-4. Once the Vercel site is live on the domain, cancel the Wix premium plan, but don't let the domain lapse.
+1. In the Pages project, open **Custom domains** and add `www.mschaffnerlcsw.com`, then `mschaffnerlcsw.com`.
+2. The easiest route is moving the domain's DNS to Cloudflare: add the domain under **Websites** in Cloudflare and change the nameservers at the registrar (Wix) to the two that Cloudflare gives you. Cloudflare then creates the Pages records itself. You can also transfer the registration to Cloudflare Registrar, at cost.
+3. Once the site loads on the domain, cancel the Wix premium plan, but don't let the domain lapse.
 
 As of October 2026, `mschaffnerlcsw.com` is registered with Wix (created 2023-11-30, **expires 2026-11-30**) and uses Wix nameservers. It has no MX records, so no email depends on it. The contact address is Gmail.
